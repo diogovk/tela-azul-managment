@@ -1,0 +1,53 @@
+* * * * * env LANG=C /usr/bin/mrtg /etc/mrtg/mrtg.cfg --logging /var/log/mrtg.log
+
+###############################################################################################
+### Rotina para desconectar usuarios perdidos
+###############################################################################################
+*/5 *    * * * /usr/local/malwee/progress/rotina/ProDesconectaUsuario.sh
+
+###############################################################################################
+### Rotina para coletar dados do BD Malwee para Analise. 
+###############################################################################################
+01,31 *   * * * /usr/local/malwee/progress/bin/ColetaProgress.sh              #
+
+###############################################################################################
+### Rotina para compactar arquivos de AI do Progress. Elimina arquivos com mais de 10 dias
+###############################################################################################
+15    * * * * /usr/local/malwee/progress/script/CompactaArquivosProgress.sh #
+
+###################################################################
+### Rotina de Backup feito OnLine Durante a Semana
+###################################################################
+30 23 * * * /usr/local/malwee/progress/script/ProBackupOnLine_Prod.sh #Backup On
+
+###################################################################
+### Rotina para aplicar as alteracoes diarias no Progress
+###################################################################
+07 17       * * 0 /usr/local/malwee/progress/script/ProAltera_Prod.sh > /dev/nul
+
+###############################################################################################
+### Rotina para coletar dados para Analize dos Bancos Progress. 
+###############################################################################################
+05    08  * * 0 /usr/local/malwee/progress/rotina/ProTabanalys.sh             # Analise do BDs
+
+###############################################################################################
+### Rotinas para serem executadas eventualmente
+### Minuto  Hora  Dia-do-Mes  Mes  Dia-da-Semana (0=Dom,1=Seg)  Comando/Script
+###############################################################################################
+#05 01 * * 0  /backup/idx/ma/check_area_100a105.sh
+#10 01 * * 0  /backup/idx/ma/check_area_106a108.sh
+#15 01 * * 0  /backup/idx/ma/check_area_109a115.sh
+#40 02 * * 0  /backup/idx/ma/check_area_116a123.sh
+#50 02 * * 0  /backup/idx/ma/check_area_124a124.sh
+#55 02 * * 0  /backup/idx/ma/check_area_125a125.sh
+ 
+#05 04 * * 0  /backup/idx/geral/check_area_000a999.sh
+
+#48 05 * * 0  /backup/idx/lmg/check_area_100a105.sh
+#53 05 * * 0  /backup/idx/lmg/check_area_106a108.sh
+#01 06 * * 0  /backup/idx/lmg/check_area_109a115.sh
+#20 06 * * 0  /backup/idx/lmg/check_area_116a123.sh
+#45 07 * * 0  /backup/idx/lmg/check_area_124a124.sh
+#59 07 * * 0  /backup/idx/lmg/check_area_125a125.sh
+
+#####51 16 * * *  /backup/idx/ma/check_area_125a125.sh
