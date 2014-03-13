@@ -1,0 +1,569 @@
+#! /bin/bash
+
+# $Id: jaservimp,v 1.61 2014/02/07 14:30:33 root Exp $
+
+# Output "device discovery" information on stdout:
+if [ "$#" -eq "0" ]
+then echo 'Malwee printers "Unknown" "any USB printer"'
+     exit 0
+fi
+
+. /usr/local/bin/ComandosMT.sh
+
+exec >>/var/log/cups/cups.$($C_date +%Y%m%d).log
+exec 2>&1
+
+echo -- Inicio -------------------------------------------------------------
+date
+echo
+
+args=$5
+file=$6
+raw=0
+emails="diogo.ti@malwee.com.br --cc sergio.cpd@malwee.com.br,ricardo.cpd@malwee.com.br"
+
+case "$PRINTER" in
+
+  jacpd1teste)	args="PATHRAS=ts-ma-despacho1:5 $5" ;;
+  blcos1geral)	args="PATHRAS=ts-ma-blumenau2:1 $5" ;;
+  blcos2debrum)	args="PATHRAS=ts-ma-blumenau2:11 $5" ;;
+  blcos2tag1)	args="PATHRAS=ts-ma-blumenau2:10 $5" ;;
+  blcos2tag2)	args="PATHRAS=ts-ma-blumenau2:15 $5" ;;
+  jacor2talao10) args="PATHRAS=ts-ma-corte4:13 $5" ;;
+  blmet1geral)	args="PATHRAS=ts-ma-blumenau2:6 $5" ;;
+  caalm1geral)	args="PATHRAS=ts-lmg-exp2:7 $5" ;;
+  cacad1geral)	args="PATHRAS=ts-lmg-costura3:5 $5" ;;
+  cacor2enfesto)	args="PATHRAS=ts-lmg-corte2:7 $5" ;;
+  cacor2estoque)	args="PATHRAS=ts-lmg-costura2:8 $5" ;;
+  cacos1amostra)	args="PATHRAS=ts-lmg-costura1:6 $5" ;;
+  cacos1eton)	args="PATHRAS=ts-lmg-dob2:12 $5" ;;
+  cacos1geral)	args="PATHRAS=ts-lmg-costura1:12 $5" ;;
+  cacos1prep)	args="PATHRAS=ts-lmg-costura1:13 $5" ;;
+  caest1geral)	args="PATHRAS=ts-lmg-dob2:13 $5" ;;
+  caexp1dobracao)	args="PATHRAS=ts-lmg-texo1:1 $5" ;;
+  caexp1expedi)	args="PATHRAS=ts-lmg-exp1:12 $5" ;;
+  caexp2tag1)	args="PATHRAS=ts-lmg-texo1:7 $5" ;;
+  caexp2tag4)	args="PATHRAS=ts-lmg-texo1:8 $5" ;;
+  camet1geral)	args="PATHRAS=ts-lmg-costura3:11 $5" ;;
+  cavir1geral)	args="PATHRAS=ts-lmg-corte2:3 $5" ;;
+  jaalm1etiqueta)	args="PATHRAS=ts-ma-costura2:4 $5" ;;
+  jacos1mostrua)	args="PATHRAS=ts-ma-despacho1:2 $5" ;;
+  jaalm1geral)	args="PATHRAS=ts-ma-costura2:15 $5" ;;
+  jacob1geral)	args="PATHRAS=ts-ma-sservidor1:1 $5" ;;
+  jacor1enfest)	args="PATHRAS=ts-ma-corte1:4 $5" ;;
+  jacor1separ)	args="PATHRAS=ts-ma-corte4:13 $5" ;;
+  jacor2corte)	args="PATHRAS=ts-ma-corte4:11 $5" ;;
+  jacos1centra)	args="PATHRAS=ts-ma-retilinea1:3 $5" ;;
+  jacos1geral2)	args="PATHRAS=ts-ma-retilinea1:13 $5" ;;
+  jacos1geral)	args="PATHRAS=ts-ma-retilinea1:9 $5" ;;
+  jacos1mostrua)	args="PATHRAS=ts-ma-mostruario1:6 $5" ;;
+  jacos1retil)	args="PATHRAS=ts-ma-retilinea1:1 $5" ;;
+  jaest1conjun)	args="PATHRAS=ts-ma-estamparia5:12 $5" ;;
+  jaest1salapas)	args="PATHRAS=ts-ma-estamparia1:16 $5" ;;
+  jaest1separa)	args="PATHRAS=ts-ma-estamparia1:15 $5" ;;
+  jaest2rf)	args="PATHRAS=ts-ma-estamparia2:12 $5" ;;
+  jaexp1dobrac)	args="PATHRAS=ts-ma-dobracao1:4 $5" ;;
+  jaexp1estpe)	args="PATHRAS=ts-ma-expedicao2:11 $5" ;;
+  jaexp1leitura2)	args="PATHRAS=ts-ma-expedicao1:12 $5" ;;
+  jaexp1separ)	args="PATHRAS=ts-ma-expedicao2:9 $5" ;;
+  jaexp2tag1)	args="PATHRAS=ts-ma-dobracao1:5 $5" ;;
+  jaexp2tag4)	args="PATHRAS=ts-ma-estoque1:3 $5" ;;
+  jaexp2tag5)	args="PATHRAS=ts-ma-estoque1:15 $5" ;;
+  jamal1cones)	args="PATHRAS=ts-ma-tecelagem2:4 $5" ;;
+  jamal2retil)	args="PATHRAS=ts-ma-tecelagem2:3 $5" ;;
+  japro1progr1)	args="PATHRAS=ts-ma-sservidor1:16 $5" ;;
+  jatin1estoque2)	args="PATHRAS=ts-ma-costura1:13 $5" ;;
+  jatin1estoque)	args="PATHRAS=ts-ma-despacho1:3 $5" ;;
+  jatin1punho1)	args="PATHRAS=ts-ma-punhos1:1 $5" ;;
+  poalm1geral)	args="PATHRAS=ts-ma-pomerode3:10 $5" ;;
+  pocos1punho)	args="PATHRAS=ts-ma-pomerode3:14 $5" ;;
+  pocos2tag1)	args="PATHRAS=ts-ma-pomerode4:9 $5" ;;
+  podsp1nota)	args="PATHRAS=ts-ma-pomerode1:3 $5" ;;
+  teste)	args="REDE=172.16.4.225 $5" ;;
+  cacor4texo)	args="REDE=172.17.4.21 $5" ;;
+  jacor4texo)	args="REDE=172.16.4.219 $5" ;;
+esac
+
+set -x
+
+[ "$CONTENT_TYPE" = "application/vnd.cups-raw" ] && raw=1
+
+# Impressoras CANON precisam ser RAW. A HP2055 tambem precisa ser RAW
+
+echo $args | $C_perl -e 'while(<>) { exit (m/(jaservimp|pacservimp|cmservimp)=[a-z_0-9]+(3245|2055|5550|6075|8080|6500|6182|4020)[ab]?/i)};'
+
+[ $? = 0 ] || raw=1
+
+#echo -- env -------------------------------------------------------------
+#env
+#echo -- env -------------------------------------------------------------
+
+echo $args | grep -i PATHRAS=
+if [ $? = 0 ]
+then
+   pathras=$(echo $args | $C_sed -e 's/^.*PATHRAS=//i' -e 's/ .*$//')
+   echo "INFO: sending data to PATHRAS $pathras" 1>&2
+   $C_sleep 1
+   dir=/var/spool/cups_malwee/$(echo $pathras | $C_sed -e s,:,/,g)
+   $C_mkdir -p $dir
+   $C_ln $file $dir
+   /usr/local/malwee/bin/EnviaDadosParaImpressorasTS.sh $pathras &
+exit 0
+   $C_rcp $file $pathras 2>/var/tmp/PATHRAS.$$.log
+   rc=$?
+   if [ $rc = 0 ]
+   then
+      echo 'INFO: ' 1>&2
+      $C_rm -f /var/tmp/PATHRAS.$$.log
+      exit 0
+   else
+      echo "ERROR: failed to send data to PATHRAS $pathras" 1>&2
+      $C_grep -q 'short read' /var/tmp/PATHRAS.$$.log
+      if [ $? != 0 ]
+      then
+        /usr/local/bin/mtsend.pl \
+            --email $emails \
+            --subject "$0[$LINENO]: ERROR: failed to send data to PATHRAS $pathras" \
+            --body /var/tmp/PATHRAS.$$.log
+      fi
+      $C_rm -f /var/tmp/PATHRAS.$$.log
+      exit 0
+   fi
+fi
+
+function EncapsulaPS {
+cat <<EndOfFile
+%!PS-Adobe-3.0
+%%BoundingBox: 12 12 583 830
+%%Pages: 1
+%%For: (user)
+%%Title: (Malwee.ps)
+%RBINumCopies: 1
+%%EndComments
+%%BeginProlog
+[{
+%%BeginFeature: *HPJobRetentionOption HPJobRetentionOff
+
+	<< /CollateDetails
+	<< /Type 8 /Hold 0 >> >> setpagedevice
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPUserName FileSharingName
+
+	<< /CollateDetails
+		<< /Type 8
+			/UserName /dscInfo where
+				{ /dscInfo get dup /For known
+					{/For get}
+					{pop (No User Name)} ifelse}
+				{(No User Name)}ifelse
+			dup length 80 gt { 0 80 getinterval } if
+			dup true exch { 32 eq not { false exch pop } if } forall
+			{ pop (No User Name) } if
+			0 1 2 index length 1 sub
+			{ dup 2 index exch get dup 97 ge 1 index 122 le and
+				{ 32 sub 2 index 3 1 roll put }
+				{ pop pop } ifelse
+			} for
+		>>
+	>> setpagedevice
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPJobName DocName
+
+	<< /CollateDetails
+		<< /Type 8
+			/JobMgrName /dscInfo where
+				{ /dscInfo get dup /Title known
+					{/Title get}
+					{pop ()} ifelse}
+				{()}ifelse
+			/dscInfo where
+				{ /dscInfo get dup /Creator known
+					{
+						/Creator get dup 0 exch
+						{ dup 32 eq exch dup 64 gt exch 122 le and or { 1 add } { exit } ifelse } forall
+						0 exch getinterval anchorsearch { pop } if
+					}
+					{pop} ifelse
+				} if
+			{ (:) search
+				{ pop pop }
+				{ exit }
+				ifelse
+			} loop
+			dup 0 exch { false ( -) { 2 index eq or } forall exch pop { 1 add } { exit } ifelse } forall
+			dup 0 eq { pop } { dup 2 index length exch sub getinterval } ifelse
+			dup length 80 gt { 0 80 getinterval } if
+			dup true exch { 32 eq not { false exch pop } if } forall
+			{ pop () } if
+			0 1 2 index length 1 sub
+			{ dup 2 index exch get dup 97 ge 1 index 122 le and
+				{ 32 sub 2 index 3 1 roll put }
+				{ pop pop } ifelse
+			} for
+		>>
+	>> setpagedevice
+%%EndFeature
+} stopped cleartomark
+%%EndProlog
+%%BeginSetup
+% Disable CTRL-D as an end-of-file marker...
+userdict dup(\004)cvn{}put (\004\004)cvn{}put
+[{
+%%BeginFeature: *Resolution 600x600x2dpi
+
+	<</HWResolution [600 600] /PreRenderingEnhance true>> setpagedevice
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPHalftone PrinterDefault
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *Smoothing PrinterDefault
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPOption_Tray3 False
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPOption_Tray4 False
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPOption_Tray5 False
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPOption_Duplexer False
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPOption_Disk False
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPOption_Envelope_Feeder False
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *InstalledMemory Mem48_63
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPOption_MBM_Mixed Standard
+userdict /HPOutputAcc (NoAcc) put
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPPaperPolicy PromptUser
+
+   <</DeferredMediaSelection true>> setpagedevice
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPEdgeToEdge False
+<</EdgeToEdge false>> setpagedevice
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPEconoMode PrinterDefault
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *Collate False
+
+    <</Collate false>> setpagedevice
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *MediaType None
+
+    <</ManualFeed false /MediaType null >> setpagedevice
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *InputSlot Tray_2
+
+    <</ManualFeed false/MediaPosition 0>> setpagedevice
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *ManualFeed False
+
+	<</ManualFeed false>> setpagedevice
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPManualDuplex False
+<< /PrintOnBackside false >> setpagedevice
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *PageRegion A4
+
+    <</DeferredMediaSelection true /PageSize [595 842] /ImagingBBox null /MediaClass null >> setpagedevice
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPStaplerOptions None
+
+<</MediaProcessing (STAPLING)  
+/MediaProcessingDetails<< 
+/MediaProcessingOption (NONE)
+/MediaProcessingBoundary 0
+/ImageOrientation 0 
+/Type 8 >> >> setpagedevice
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *Duplex None
+
+    <</Duplex false>> setpagedevice
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPwmBrightness Medium
+userdict /HPwmSaturation { [ currentcmykcolor ] /DeviceCMYK setcolorspace { .55 mul } forall setcolor } put
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPwmTextMessage Draft
+userdict /HPwmText (Draft) put
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPwmFontName HelveticaB
+
+  /Helvetica-Bold findfont dup length dict begin
+    {1 index /FID ne {def} {pop pop} ifelse} forall
+    /MacEncoding where
+    { pop /Encoding MacEncoding def }
+    { /Encoding ISOLatin1Encoding def } ifelse
+    currentdict
+  end
+  /HPwmFont exch definefont pop
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPwmFontSize pt48
+userdict /HPwmSize 48 put
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPwmTextAngle Deg45
+userdict /HPwmAngle 45 put
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPwmTextStyle Medium
+userdict /HPwmStyle { HPwmText false charpath HPwmColor .48 setlinewidth stroke } bind put
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPwmPages AllPages
+userdict /HPwmLocation true put
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *OutputBin PrinterDefault
+%%EndFeature
+} stopped cleartomark
+[{
+%%BeginFeature: *HPwmSwitch Off
+%%EndFeature
+} stopped cleartomark
+% x y w h ESPrc - Clip to a rectangle.
+userdict/ESPrc/rectclip where{pop/rectclip load}
+{{newpath 4 2 roll moveto 1 index 0 rlineto 0 exch rlineto
+neg 0 rlineto closepath clip newpath}bind}ifelse put
+% x y w h ESPrf - Fill a rectangle.
+userdict/ESPrf/rectfill where{pop/rectfill load}
+{{gsave newpath 4 2 roll moveto 1 index 0 rlineto 0 exch rlineto
+neg 0 rlineto closepath fill grestore}bind}ifelse put
+% x y w h ESPrs - Stroke a rectangle.
+userdict/ESPrs/rectstroke where{pop/rectstroke load}
+{{gsave newpath 4 2 roll moveto 1 index 0 rlineto 0 exch rlineto
+neg 0 rlineto closepath stroke grestore}bind}ifelse put
+userdict/ESPwl{}bind put
+%%EndSetup
+%%Page: 1 1
+%%BeginPageSetup
+%%EndPageSetup
+%%BeginDocument: nondsc
+EndOfFile
+}
+
+export RESET='\033E\033&k2G'
+export INIT="\033%-12345X
+@PJL SET OUTBIN=OUTBIN1
+@PJL SET ORIENTATION=PORTRAIT
+@PJL SET DUPLEX=OFF
+@PJL SET DATAMODE=GRAYSCALE
+@PJL SET BINDING=LONGEDGE
+@PJL ENTER LANGUAGE=PCL"
+export Duplex='\033&l0S'	# Nao duplex
+export Bandeja='\033&l1H'
+export FontSize='\033(12U\033(s0p11h0s0b24579T'  # Fonte 11 cpi
+export Papel='\033&l26A'  		   	# A4
+export Spacing='\033&l6D'	# 6 lpi
+export Margem='\033&a2L'	# Esquerda=2
+export Orientacao='\033&l0O'	# Retrato
+export LinhaPag='\033&l65F'     # 65 linhas por pagina
+export BandejaSaida='\033&l1G'  # Bandeja de saida padrao
+for i in $5
+do
+   w1=$(echo $i|tr -s '[:upper:]' '[:lower:]')
+   case "$w1" in
+      duplex) Duplex='\033&l1S' ;;
+      bandeja=1) Bandeja='\033&l1H' ;;
+      bandeja=2) Bandeja='\033&l4H' ;;
+      bandeja=3) Bandeja='\033&l5H' ;;
+      papel=a4) Papel="\033&l26A" ;;
+      papel=carta) Papel="\033&l2A" ;;
+      orientacao=retrato) Orientacao='\033&l0O' ;;
+      orientacao=paisagem) Orientacao='\033&l1O' ;;
+#      tamanho=*) FontSize="\033(s${w1##tamanho=}H" ;;
+      colunas=*) 
+        if [ "${w1##colunas=}" -ge 132 ]
+        then
+           FontSize='\033(12U\033(s0p19h0s0b4102T'
+           Margem='\033&a3L'   		# Esquerda=3
+        else
+           FontSize='\033(12U\033(s0p11h0s0b24579T'
+        fi
+      ;;
+      hpgl | hpgl2 | pcl | raw)	# Files assume no page breaks.
+	BSDformat=-l
+      ;;
+      ps | postscript)	# Files contain Postscript data.
+	BSDformat=-o
+      ;;
+   esac
+
+
+done
+
+: Bandeja=$Bandeja
+: BandejaSaida=$BandejaSaida
+: Duplex=$Duplex
+: FontSize=$FontSize
+: LinhaPag=$LinhaPag
+: Margem=$Margem
+: Orientacao=$Orientacao
+: Papel=$Papel
+: RESET=$RESET
+: Spacing=$Spacing
+
+export tmpFile="/malwee1/spool/.PRT.$$.txt"
+
+trap "$C_rm -f $tmpFile" 0
+
+if [ .$raw = .1 ]
+then
+  > $tmpFile
+else
+  printf "$RESET$Duplex$BandejaSaida$Papel$Bandeja$Orientacao$Margem$Spacing$LinhaPag$FontSize" > $tmpFile
+fi
+
+if [ "$BSDformat" = "-o" ]
+then
+  EncapsulaPS >> $tmpFile
+  $C_cat $file | \
+    /usr/bin/unix2dos | \
+    /bin/sed -e "s///" >> $tmpFile
+  echo "%%EndDocument" >> $tmpFile
+  echo "%%EOF" >> $tmpFile
+else
+  $C_cat $file | \
+    /usr/bin/unix2dos | \
+    /bin/sed -e "s///" >> $tmpFile
+fi
+
+echo $args | grep -i CMSERVIMP=
+if [ $? = 0 ]
+then
+   laser=$(echo $args | sed -e 's/^.*CMSERVIMP=//i' -e 's/ .*$//')
+   echo "INFO: sending data to //ti-cmfs01/$laser" 1>&2
+   set -x
+   : file=$file - $(date)
+   /usr/bin/smbclient //ti-cmfs01/${laser} printer.pack \
+          -U tiprint \
+          -s /usr/lib/cups/filter/smb.conf \
+          -c "print $tmpFile" 
+   if [ $? = 0 ]
+   then
+      echo 'INFO: ' 1>&2
+   else
+      echo "ERROR: failed to send data to //ti-cmfs01/$laser" 1>&2
+      /usr/local/bin/mtsend.pl --email $emails --subject "$0[$LINENO]: ERROR: failed to send data to //ti-cmfs01/$laser"
+   fi
+   exit 0
+fi
+
+echo $args | grep -i PACSERVIMP=
+if [ $? = 0 ]
+then
+   laser=$(echo $args | sed -e 's/^.*PACSERVIMP=//i' -e 's/ .*$//')
+   echo "INFO: sending data to //ti-pacprint/$laser" 1>&2
+   set -x
+   : file=$file - $(date)
+   /usr/bin/smbclient //ti-pacprint/${laser} printer.pack \
+          -U tiprint \
+          -s /usr/lib/cups/filter/smb.conf \
+          -c "print $tmpFile" 
+   if [ $? = 0 ]
+   then
+      echo 'INFO: ' 1>&2
+   else
+      echo "ERROR: failed to send data to //ti-pacprint/$laser" 1>&2
+      /usr/local/bin/mtsend.pl --email $emails --subject "$0[$LINENO]: ERROR: failed to send data to //ti-pacprint/$laser"
+   fi
+   exit 0
+fi
+
+echo $args | grep -i JASERVIMP=
+if [ $? = 0 ]
+then
+   laser=$(echo $args | sed -e 's/^.*JASERVIMP=//i' -e 's/ .*$//')
+   echo "INFO: sending data to //ti-print/$laser" 1>&2
+   set -x
+   : file=$file - $(date)
+   /usr/bin/smbclient //ti-print/${laser} printer.pack \
+          -U tiprint \
+          -s /usr/lib/cups/filter/smb.conf \
+          -c "print $tmpFile" 
+   if [ $? = 0 ]
+   then
+      echo 'INFO: ' 1>&2
+   else
+      echo "ERROR: failed to send data to //ti-print/$laser" 1>&2
+      /usr/local/bin/mtsend.pl --email $emails --subject "$0[$LINENO]: ERROR: failed to send data to //ti-print/$laser"
+   fi
+   exit 0
+fi
+
+echo $args | grep -i REDE=
+if [ $? = 0 ]
+then
+   rede=$(echo $args | sed -e 's/^.*REDE=//i' -e 's/ .*$//')
+   echo "INFO: sending data to $rede 9100" 1>&2
+   /bin/cat $tmpFile | \
+      /usr/bin/nc -w2 $rede 9100
+   if [ $? = 0 ]
+   then
+      echo "INFO: $rede OK " 1>&2
+      exit 0
+   else
+      echo "ERROR: failed to send data to $rede 9100" 1>&2
+      /usr/local/bin/mtsend.pl --email $emails --subject "$0[$LINENO]: ERROR: failed to send data to $rede 9100"
+      exit 0
+   fi
+fi
+
+/usr/lib/cups/filter/gziptoany.original "$@"
+exit 0
