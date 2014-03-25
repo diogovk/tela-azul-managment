@@ -90,7 +90,7 @@ set -x
 
 # Impressoras CANON precisam ser RAW. A HP2055 tambem precisa ser RAW
 
-echo $args | $C_perl -e 'while(<>) { exit (m/(jaservimp|pacservimp|cmservimp)=[a-z_0-9]+(3245|2055|5550|6075|8080|6500|6182|4020)[ab]?/i)};'
+echo $args | $C_perl -e 'while(<>) { exit (m/(jaservimp|pacservimp|cmservimp)=[a-z_0-9]+(3245|2055|5550|6075|8080|6500|6182|4070|4020)[ab]?/i)};'
 
 [ $? = 0 ] || raw=1
 
