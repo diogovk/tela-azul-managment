@@ -1,0 +1,9 @@
+# MTMON
+0,15,30,45 * * * * /usr/local/Multitask/mtmon/bin/mtmon_cron.pl #
+59         * * * * /usr/local/Multitask/mtadm/bin/MonitoraAmbiente.sh #
+30 6,12,18   * * * /usr/local/Multitask/mtadm/bin/mtwdog_files.pl --sincronizar #
+*/15       * * * * /usr/local/Multitask/mtadm/bin/ColetaMemoriaReal.sh #
+*/15       * * * * /usr/local/malwee/bin/RestauraCUPS.sh #
+30 6,12,18   * * * /usr/local/bin/CopiaPasswd.sh #
+*/5	   * * * * /root/mayko/cputest.sh # 
+30   2       * * * /usr/local/malwee/script/RemoveArquivosAntigosReplic.sh
