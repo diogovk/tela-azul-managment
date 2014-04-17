@@ -1,6 +1,6 @@
 #! /bin/bash
 
-# $Id: jaservimp,v 1.68 2014/03/21 15:30:47 root Exp $
+# $Id: jaservimp,v 1.66 2014/04/15 21:30:36 root Exp $
 
 # Output "device discovery" information on stdout:
 if [ "$#" -eq "0" ]
@@ -90,7 +90,7 @@ set -x
 
 # Impressoras CANON precisam ser RAW. A HP2055 tambem precisa ser RAW
 
-echo $args | $C_perl -e 'while(<>) { exit (m/(jaservimp|pacservimp|cmservimp)=[a-z_0-9]+(3245|2055|5550|6075|8080|6500|6182|4070|4020|5010)[ab]?/i)};'
+echo $args | $C_perl -e 'while(<>) { exit (m/(jaservimp|pacservimp|cmservimp)=[a-z_0-9]+(3245|2055|5550|6075|8080|6500|6182|4070|4020|5010|5755|400)[ab]?/i)};'
 
 [ $? = 0 ] || raw=1
 
